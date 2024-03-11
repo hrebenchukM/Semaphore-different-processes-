@@ -28,17 +28,23 @@ void GetFileInfo(HWND hDlg) {
 
 
 
+        // проверка на то что файл такой есть
         if (file) {
-            // Получаем размер файла
+            // каретка в файле сдвигается в конец файла( каретка -- это указатель внутри файла)
             file.seekg(0, ios::end);
+            // данная функция получает текущую позицию в файле, что и есть его размером
             int fileSize = file.tellg();
+            // каретку сдвигаем в начало
             file.seekg(0, ios::beg);
 
-            // Получаем количество символов в файле
-            string content((istreambuf_iterator<char>(file)),istreambuf_iterator<char>());
-            int numCharacters = content.size();
+            // здесь считается кол-во символов в файле
+            char ch;
+            int numCharacters = 0;
+            while (file.get(ch)) {
+                numCharacters++;
+            }
 
-            // Получаем дату и время создания файла
+            //StackOverflow code
             struct stat filestatus;
             stat(filename.c_str(), &filestatus);
             struct tm* creationTime = localtime(&filestatus.st_mtime);
@@ -47,13 +53,11 @@ void GetFileInfo(HWND hDlg) {
             string fileDate(buffer);
 
 
-
-
-
-
-            // Увеличиваем счетчики
+            // кол-во копий
             ++totalCopies;
+            // общее кол-во символов
             totalCharacters += numCharacters;
+            // общий размер всех файлов
             totalSize += fileSize;
 
             // Обновляем самую раннюю дату, если текущая дата раньше
